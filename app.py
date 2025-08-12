@@ -1,49 +1,19 @@
-import influxdb_client, os, time
-from influxdb_client import InfluxDBClient, Point, WritePrecision
-from influxdb_client.client.write_api import SYNCHRONOUS
-from dotenv import load_dotenv
+from symbol import pass_stmt
 
-load_dotenv()
-token = os.environ.get("INFLUXDB_TOKEN")
-org = "saqib"
-url = "http://localhost:8086"
+from flask import Flask, request, jsonify
+from datetime import datetime, timedelta
 
-client = influxdb_client.InfluxDBClient(url=url, token=token, org=org)
+app = Flask(__name__)
 
-bucket = "energy_raw"
+#TODO: ADD GET /devices -> Returns all active devices that have reported in the last 24 hours
+#TODO: ADD GET /timeseries -> Returns chart
+#TODO: ADD GET /alerts -> Anything in the Anomaly bucket
+#TODO: ADD GET /ingest -> So our program can ingest new data
 
-# write_api = client.write_api(write_options=SYNCHRONOUS)
-#
-# for value in range(5):
-#     point = (
-#         Point("measurement1")
-#         .tag("tagname1", "tagvalue1")
-#         .field("field1", value)
-#     )
-#     write_api.write(bucket=bucket, org="saqib", record=point)
-#     time.sleep(1)  # separate points by 1 second
-
-query_api = client.query_api()
-
-# query = """from(bucket: "energy_raw")
-#  |> range(start: -10m)
-#  |> filter(fn: (r) => r._measurement == "energy")
-#  |> mean()"""
+@app.route("/devices")
+def view_devices():
+    pass
 
 
-
-query = '''from(bucket: "energy_raw")
-  |> range(start: -30m, stop: now())
-  |> filter(fn: (r) => r._measurement == "energy" and r.device_id == "1002")
-  |> filter(fn: (r) => r._field == "temp_c")
-  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
-  |> group(columns: [])
-  |> sort(columns: ["_time"])'''
-
-tables = query_api.query(query, org="saqib")
-
-# for table in tables:
-#   for record in table.records:
-#     print(record)
-
-print(tables[0].records)
+if __name__ == "__main__":
+    app.run(debug=True)
