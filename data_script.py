@@ -19,7 +19,7 @@ write_api = client.write_api(write_options=SYNCHRONOUS)
 count = 0
 while True:
     time.sleep(1)
-    device_num = random.randint(1000,1006)
+    device_num = random.randint(1000,1009)
     power_num = random.uniform(12.5, 17.8)
     current_num  = random.uniform(18.5,32.5)
     voltage_num = random.uniform(475.3,482.8)
