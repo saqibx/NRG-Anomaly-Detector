@@ -1,4 +1,4 @@
-from QueryHelper import get_all_devices, get_device, Record, DBHandler, bucket, MEASUREMENT
+from QueryHelper import get_all_devices, get_device, Record, get_all_alerts ,DBHandler, bucket, MEASUREMENT
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
 
@@ -23,15 +23,21 @@ app = Flask(__name__)
 #TODO: ADD GET /alerts -> Anything in the Anomaly bucket
 
 
+@app.route("/api/alerts", methods=['GET'])
+def view_all_alerts():
+    data = get_all_alerts()
+    return jsonify(data)
+
+
 
 @app.route("/api/devices")
-def view_devices():
+def view_all_devices():
     data = get_all_devices()
     return jsonify(data)
 
 
-@app.get("/api/devices/<device_id>/bundle")
-def bundle(device_id):
+@app.get("/api/devices/<device_id>")
+def view_device(device_id):
     data = get_device(device_id)
     return data
 

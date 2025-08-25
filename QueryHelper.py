@@ -129,19 +129,28 @@ def get_device(device_id):
     })
 
 
+def get_all_alerts():
+    query = '''
+         from(bucket: "alerts")
+         |> range(start: -24h)
+         |> filter(fn: (r) => 
+            r._measurement == "alerts" and
+            r._field == "value"
+         )
+         |> group(columns: ["device_id", "reason"])   // one group with both keys
+         |> sort(columns: ["_time"], desc: true)      // make “latest” explicit
+         |> limit(n: 1)                                // latest per (device_id, reason)
+         |> keep(columns: ["device_id", "reason", "_time", "_value"])
+        '''
+    devices = []
+    tables = query_api.query(query, org="saqib")
+    for result in tables:
+        for record in result.records:
+            devices.append({
+                "device_id": record['device_id'],
+                "reason": record["reason"],
+                "last_seen": record['_time'].isoformat(),
+                "value": record["_value"]
+            })
 
-
-def ingest_information(data):
-    data = {
-  "device_id": "1009",
-  "timestamp": "2025-08-12T12:34:56Z",
-  "metrics": {
-    "voltage_v": 12.35,
-    "temp_c": 24.8,
-    "current_a": 0.56
-         }
-    }
-
-    print(data.get("device_id"))
-
-# ingest_information()
+    return devices
