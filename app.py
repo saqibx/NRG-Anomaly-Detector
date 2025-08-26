@@ -9,6 +9,8 @@ from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 from dotenv import load_dotenv
 
+from flask_cors import CORS
+
 load_dotenv()
 token = os.environ.get("INFLUXDB_TOKEN")
 org = "saqib"
@@ -17,10 +19,11 @@ INGEST_KEY = os.getenv("INGEST_KEY")
 client = influxdb_client.InfluxDBClient(url=url, token=token, org=org)
 
 app = Flask(__name__)
+CORS(app)
 
 
 #TODO: ADD GET /timeseries -> Returns chart
-#TODO: ADD GET /alerts -> Anything in the Anomaly bucket
+
 
 
 @app.route("/api/alerts", methods=['GET'])
