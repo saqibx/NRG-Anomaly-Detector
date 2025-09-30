@@ -66,17 +66,17 @@ def ingest_information():
                 if line:
                     items.append(json.loads(line))
         else:
-            # Handle JSON data
+          
             items = data if isinstance(data, list) else [data]
 
-        # Process the items
+        
         try:
             records = [Record(**item) for item in items]
             print("INGEST DEBUG:", [r.model_dump() for r in records])
         except Exception as e:
             return jsonify({"ok": False, "error": "validation_error", "details": str(e)}), 422
 
-        # Write to Influx
+       
         try:
             with InfluxDBClient(url=url, token=token, org=org) as client:
                 db = DBHandler(client, bucket=bucket, org=org, measurement=MEASUREMENT)
